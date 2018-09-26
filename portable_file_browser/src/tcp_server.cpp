@@ -55,3 +55,20 @@ int TCP_Listener::recv_msg()
         //close(this->accept_fd);
     }
 }
+
+TCP_Responser::TCP_Responser()
+{
+
+}
+
+int TCP_Responser::send_msg()
+{
+    while(1)
+    {
+        Message sending_msg = send_msg_list.pop();
+        if(send(sending_msg.GetAcceptFd(), sending_msg.GetMessageContent(), sending_msg.GetMessageLength(), 0) < 0)
+        {
+            fprintf(stderr, "send() error!\n");
+        }
+    }
+}

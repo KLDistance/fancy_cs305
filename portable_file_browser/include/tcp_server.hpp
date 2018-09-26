@@ -28,6 +28,10 @@ private:
     pthread_t listener_thread;
     pthread_t processor_threads[MAX_CONCURRENCY_THREAD_NUM];
     pthread_t responser_thread;
+
+    void* listener_thread_proc(void *lp_parameters);
+    void* processor_threads_proc(void *lp_parameters);
+    void* responser_thread_proc(void *lp_parameters);
 public:
     int init_thread_state();
     int thread_start();

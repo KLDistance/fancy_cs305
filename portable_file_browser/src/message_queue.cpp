@@ -49,18 +49,18 @@ int Message::GetAcceptFd()
     return this->accept_fd;
 }
 
-Recv_Msg_List::Recv_Msg_List()
+Msg_List::Msg_List()
 {
     pthread_mutex_init(&this->lock, NULL);
     pthread_cond_init(&this->cond, NULL);
 }
 
-Recv_Msg_List::~Recv_Msg_List()
+Msg_List::~Msg_List()
 {
 
 }
 
-void Recv_Msg_List::push(Message m)
+void Msg_List::push(Message m)
 {
     pthread_mutex_lock(&this->lock);
     this->msg_list.push_back(m);
@@ -68,7 +68,7 @@ void Recv_Msg_List::push(Message m)
     pthread_cond_signal(&this->cond);
 }
 
-Message Recv_Msg_List::pop()
+Message Msg_List::pop()
 {
     int get = 0;
     Messgae message;
@@ -87,23 +87,4 @@ Message Recv_Msg_List::pop()
             pthread_mutex_unlock(&this->lock);
         }
     } while(!get);
-}
-
-Send_Msg_List::Send_Msg_List()
-{
-    pthread_mutex_init(&this->lock, NULL);
-    pthread_cond_init(&this->cond, NULL);
-}
-
-Send_Msg_List::~Send_Msg_List()
-{
-
-}
-
-void Send_Msg_List::push(Message m)
-{
-    pthread_mutex_lock(&this->lock);
-    this->msg_list.push_back(m);
-    pthread_mutex_unlock(&this->lock);
-    pthread_cond_signal(&this->cond);
 }

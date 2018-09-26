@@ -16,32 +16,19 @@ public:
     int GetAcceptFd();
 };
 
-class Recv_Msg_List
+class Msg_List
 {
 private:
     pthread_mutex_t lock;
     pthread_cond_t cond;
     std::list<Message> msg_list;
 public:
-    Recv_Msg_List();
-    ~Recv_Msg_List();
-    void push(Message m);
-    Message pop();
-};
-
-class Send_Msg_List
-{
-private:
-    pthread_mutex_t lock;
-    pthread_cond_t cond;
-    std::list<Message> msg_list;
-public:
-    Send_Msg_List();
-    ~Send_Msg_List();
+    Msg_List();
+    ~Msg_List();
     void push(Message m);
     Message pop();
 };
 
 // global message list
-extern Recv_Msg_List recv_msg_list;
-extern Send_Msg_List send_msg_list;
+extern Msg_List recv_msg_list;
+extern Msg_List send_msg_list;
