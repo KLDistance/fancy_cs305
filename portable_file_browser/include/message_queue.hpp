@@ -44,3 +44,4 @@ public:
 
 // global message list
 extern Recv_Msg_List recv_msg_list;
+extern Send_Msg_List send_msg_list;
