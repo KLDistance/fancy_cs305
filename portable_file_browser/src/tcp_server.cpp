@@ -70,5 +70,29 @@ int TCP_Responser::send_msg()
         {
             fprintf(stderr, "send() error!\n");
         }
+        else
+        {
+            sending_msg.Free();
+        }
     }
+}
+
+int Task_Manager::init_thread_state(size_t init_concurrency_num)
+{
+    this->shutter = 0;
+    this->concurrency_num = init_concurrency_num;
+    sem_init(&this->concurrency_distributer, 0, this->concurrency_num);
+    return 0;
+}
+
+int Task_Manager::thread_start()
+{
+    size_t i;
+    pthread_create(&this->listener_thread, NULL, this->listener_thread_proc, NULL);
+    pthread_create(&this->responser_thread, NULL, this->responser_thread_proc, NULL);
+    for(i = 0; i < this->concurrency_num; i++)
+    {
+        pthread_create(&this->processor_threads[i], NULL, this->processor_threads_proc, NULL);
+    }
+    return 0;
 }

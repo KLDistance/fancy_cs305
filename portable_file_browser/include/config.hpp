@@ -1,3 +1,6 @@
+#ifndef __CONFIG_HPP__
+#define __CONFIG_HPP__
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -14,3 +17,5 @@
 #define MAX_CONCURRENCY_THREAD_NUM 4
 
 extern const unsigned int MAX_VISITOR_NUM = 20;
+
+#endif

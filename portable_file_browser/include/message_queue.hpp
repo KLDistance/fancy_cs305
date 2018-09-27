@@ -1,3 +1,6 @@
+#ifndef __MESSAGE_QUEUE_HPP__
+#define __MESSAGE_QUEUE_HPP__
+
 #include "config.hpp"
 
 class Message
@@ -32,3 +35,5 @@ public:
 // global message list
 extern Msg_List recv_msg_list;
 extern Msg_List send_msg_list;
+
+#endif
