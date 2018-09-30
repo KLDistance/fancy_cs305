@@ -30,6 +30,10 @@
 #define MAX_CONTENT_TYPE_LEN 256
 // default file buffer size
 #define MAX_DEFAULT_FILE_LEN 128
+// user agent buffer size
+#define MAX_USER_AGENT_LEN 128
+// accept information buffer size
+#define MAX_ACCEPT_INFO 128
 
 // send message buffer size
 #define MAX_SEND_BUF 8192
@@ -60,7 +64,6 @@
 #define STATUS_FORBIDDEN 403
 #define STATUS_NOT_FOUND 404
 #define STATUS_PAYLOAD_TOO_LARGE 413
-
 
 // transmission file type
 #define FILE_TYPE_TEXT_HTML 1

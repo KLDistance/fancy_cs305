@@ -87,6 +87,18 @@ int HTTP_Receiving_Message_Header::SetDefaultRequestLocation(const char *path)
     return 0;
 }
 
+int HTTP_Receiving_Message_Header::SetUserAgent(const char *user_agent)
+{
+    strncpy(this->user_agent, user_agent, strlen(user_agent));
+    return 0;
+}
+
+int HTTP_Receiving_Message_Header::SetAcceptInfo(const char *accept_info)
+{
+    strncpy(this->accept_info, accept_info, strlen(accept_info));
+    return 0;
+}
+
 int HTTP_Receiving_Message_Header::GetHTTPVersion()
 {
     return this->http_version;
@@ -114,8 +126,9 @@ size_t HTTP_Receiving_Message_Header::GetContentLength()
 
 int HTTP_Interpreter::GenerateRecvHeader(HTTP_Receiving_Message_Header *recv_header, Message *recv_message)
 {
-    size_t i, j;
+    size_t i, j, k;
     int state_code = 0;
+    char *tmp_location_ptr = NULL;
     char *content_message = recv_message->GetMessageContent();
     size_t content_length = recv_message->GetMessageLength();
 
@@ -126,7 +139,7 @@ int HTTP_Interpreter::GenerateRecvHeader(HTTP_Receiving_Message_Header *recv_hea
     // extract info of first line of request
 
     // request type
-    for(i = 0, j = 0; i < content_length; i++)
+    for(i = 0, j = 0, k = 0; i < content_length; i++)
     {
         if(content_message[i] == ' ') break;
     }
@@ -157,6 +170,65 @@ int HTTP_Interpreter::GenerateRecvHeader(HTTP_Receiving_Message_Header *recv_hea
     CHECK_STATE(state_code);
     recv_header->SetHTTPVersion(state_code);
     memset(tmp_buf, 0, MAX_LOCAL_TMP_BUF);
+
+    // server host name
+    j = ++i;
+    k = HTTP_Interpreter::HTTPHeaderKMP(
+        content_message,
+        "Host",
+        tmp_buf,
+        &tmp_location_ptr,
+        i
+    );
+    recv_header->SetHostName(tmp_buf);
+    memset(tmp_buf, 0, k < MAX_LOCAL_TMP_BUF ? k : MAX_LOCAL_TMP_BUF);
+
+    // user agent
+    j = ++i;
+    k = HTTP_Interpreter::HTTPHeaderKMP(
+        content_message, 
+        "User-Agent",
+        tmp_buf,
+        &tmp_location_ptr,
+        i
+    );
+    recv_header->SetUserAgent(tmp_buf);
+    memset(tmp_buf, 0, k < MAX_LOCAL_TMP_BUF ? k : MAX_LOCAL_TMP_BUF);
+
+    // accept info
+    j = ++i;
+    k = HTTP_Interpreter::HTTPHeaderKMP(
+        content_message,
+        "Accept",
+        tmp_buf,
+        &tmp_location_ptr,
+        i
+    );
+    recv_header->SetAcceptInfo(tmp_buf);
+    memset(tmp_buf, 0, k < MAX_LOCAL_TMP_BUF ? k : MAX_LOCAL_TMP_BUF);
+
+    // TODO: there is some content of body arrives at server from client, but currently I do not handle it
+
+    return 0;
+}
+
+int HTTP_Interpreter::GenerateSendHeader(HTTP_Sending_Message_Header *send_header, Message *send_message)
+{
+    return 0;
+}
+
+int HTTP_Interpreter::GenerateSendMessage(HTTP_Receiving_Message_Header *recv_header, Message *recv_message, Message **new_send_message)
+{
+    if(*new_send_message) 
+    {
+        delete *new_send_message;
+        *new_send_message = NULL;
+    }
+    // we use a sample page to pass back to user
+    char *content_body = NULL;
+
+    sample_info_provider(&content_body);
+    
 
     return 0;
 }

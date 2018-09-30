@@ -3,11 +3,12 @@
 
 #include "config.hpp"
 #include "message_queue.hpp"
+#include "content_provider.hpp"
 
 #define CHECK_STATE(code) (                             \
     if (!(code)) {                                      \
         fprintf(stderr, "server error %d\n", code);     \
-        return 0;                                       \
+        return -1;                                      \
     }                                                   \
 )
 
@@ -15,11 +16,22 @@ class HTTP_Receiving_Message_Header
 {
 private:
     // default configuration
+
+    // request http version
     int http_version = HTTP_VERSION_1_0;
+    // request type: GET, HEAD, POST and so on
     int request_type = REQUEST_HEAD;
+    // request entry file, for instance, index.php
     char default_file[MAX_DEFAULT_FILE_LEN];
+    // local server name
     char host_name[MAX_HOST_NAME_LEN];
+    // request content type
     char content_type[MAX_CONTENT_TYPE_LEN];
+    // client used agent type
+    char user_agent[MAX_USER_AGENT_LEN];
+    // accept information
+    char accept_info[MAX_ACCEPT_INFO];
+    // content length
     size_t content_length = 0;
 public:
     // TODO: change the declaration of this object to be heap-only, and stack-forbidden.
@@ -32,6 +44,9 @@ public:
     int SetHostName(const char *host_name);
     int SetContentType(const char *content_type);
     int SetDefaultRequestLocation(const char *path);
+    int SetUserAgent(const char *user_agent);
+    int SetAcceptInfo(const char *accept_info);
+
     // get methods
     int GetHTTPVersion();
     int GetRequestType();
@@ -44,16 +59,23 @@ class HTTP_Sending_Message_Header
 {
 private:
     // default configuration
+    
+    // http version of response side
     int http_version = HTTP_VERSION_1_0;
+    // connection state
     int connection_state = CONNECTION_CLOSE;
+    // response content type
     int content_type = FILE_TYPE_TEXT_HTML;
+    // content encoding type
     int charset_type = CHARSET_UTF8;
+    // response content length
     size_t content_length = 0;
 public:
     // TODO: change the declaration of this object to be heap-only, and stack-forbidden.
     HTTP_Sending_Message_Header();
     HTTP_Sending_Message_Header(int http_ver, int conn_stat, int content, int charset, size_t content_len);
     
+    // get methods
     int GetHTTPVersion();
     int GetConnectionState();
     int GetContentType();
@@ -70,6 +92,9 @@ protected:
 public:
     static int GenerateRecvHeader(HTTP_Receiving_Message_Header *recv_header, Message *recv_message);
     static int GenerateSendHeader(HTTP_Sending_Message_Header *send_header, Message *send_message);
+    
+    // generate the sending message according to the recv header and content provider machine
+    static int GenerateSendMessage(HTTP_Receiving_Message_Header *recv_header, Message *recv_message, Message **new_sending_message);
 
     // check whether request type in list
     static int RequestTypeInList(const char *request_section);
@@ -82,7 +107,7 @@ public:
         const char *target_content,
         char *content_out_buf,
         char **to_target_ptr_in_content,
-        int start_index = 0
+        size_t start_index = 0
     );
 };
 
