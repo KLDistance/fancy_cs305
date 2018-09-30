@@ -46,12 +46,45 @@ size_t HTTP_Sending_Message_Header::GetContentLength()
 
 HTTP_Receiving_Message_Header::HTTP_Receiving_Message_Header()
 {
-
+    // clear string buffer
+    memset(this->default_file, 0, MAX_DEFAULT_FILE_LEN);
+    memset(this->host_name, 0, MAX_HOST_NAME_LEN);
+    memset(this->content_type, 0, MAX_CONTENT_TYPE_LEN);
 }
 
 HTTP_Receiving_Message_Header::HTTP_Receiving_Message_Header(int request, const char *host, const char *content, size_t content_len)
 {
 
+}
+
+int HTTP_Receiving_Message_Header::SetHTTPVersion(int version)
+{
+    this->http_version = version;
+    return 0;
+}
+
+int HTTP_Receiving_Message_Header::SetRequestType(int request_type)
+{
+    this->request_type = request_type;
+    return 0;
+}
+
+int HTTP_Receiving_Message_Header::SetHostName(const char *host_name)
+{
+    strncpy(this->host_name, host_name, strlen(host_name));
+    return 0;
+}
+
+int HTTP_Receiving_Message_Header::SetContentType(const char *content_type)
+{
+    strncpy(this->content_type, content_type, strlen(content_type));
+    return 0;
+}
+
+int HTTP_Receiving_Message_Header::SetDefaultRequestLocation(const char *path)
+{
+    strncpy(this->default_file, path, strlen(path));
+    return 0;
 }
 
 int HTTP_Receiving_Message_Header::GetHTTPVersion()
@@ -81,36 +114,49 @@ size_t HTTP_Receiving_Message_Header::GetContentLength()
 
 int HTTP_Interpreter::GenerateRecvHeader(HTTP_Receiving_Message_Header *recv_header, Message *recv_message)
 {
-    // "i" is text iter, "j" is dividor iter, "k" is tmp iter
-    size_t i, j, k;
-    size_t whole_content_size = recv_message->GetMessageLength();
-    int error_code = 0;
-    char tmp_buf[512] = {0};
-    char *message_whole_content = recv_message->GetMessageContent();
+    size_t i, j;
+    int state_code = 0;
+    char *content_message = recv_message->GetMessageContent();
+    size_t content_length = recv_message->GetMessageLength();
 
-    // check request type from client
-    for(i = 0, k = 0; i < whole_content_size; i++)
-    {
-        
-    }
+    // reserve info buffer with 1024 bytes
+    char tmp_buf[MAX_LOCAL_TMP_BUF];
+    memset(tmp_buf, 0, MAX_LOCAL_TMP_BUF);
 
-    // check validity of http protocol version
-    for(i = 0, j = 0; i < whole_content_size; i++)
+    // extract info of first line of request
+
+    // request type
+    for(i = 0, j = 0; i < content_length; i++)
     {
-        if(message_whole_content[i] == ' ') j++;
-        if(j == 2)
-        {
-            i++;
-            break;
-        }
+        if(content_message[i] == ' ') break;
     }
-    for(k = i;k < whole_content_size; k++)
+    strncpy(tmp_buf, content_message, i - j);
+    state_code = HTTP_Interpreter::RequestTypeInList(tmp_buf);
+    CHECK_STATE(state_code);
+    recv_header->SetHTTPVersion(state_code);
+    memset(tmp_buf, 0, MAX_LOCAL_TMP_BUF);
+
+    // default term or page of target host
+    j = ++i;
+    for(;i < content_length; i++)
     {
-        if(message_whole_content[k] == '\r') break;
+        if(content_message[i] == ' ') break;
     }
-    memset(tmp_buf, 0, 512);
-    strncpy(tmp_buf, (message_whole_content + i), k - i);
-    recv_header->GetHTTPVersion = HTTP_Interpreter::HTTPVersionInList(tmp_buf);
+    strncpy(tmp_buf, content_message, i - j);
+    recv_header->SetDefaultRequestLocation(tmp_buf);
+    memset(tmp_buf, 0, MAX_LOCAL_TMP_BUF);
+
+    // http version
+    j = ++i;
+    for(;i < content_length; i++)
+    {
+        if(content_message[i] == '\r' || content_message == ' ') break;
+    }
+    strncpy(tmp_buf, content_message, i - j);
+    state_code = HTTP_Interpreter::HTTPVersionInList(tmp_buf);
+    CHECK_STATE(state_code);
+    recv_header->SetHTTPVersion(state_code);
+    memset(tmp_buf, 0, MAX_LOCAL_TMP_BUF);
 
     return 0;
 }
@@ -152,6 +198,78 @@ int HTTP_Interpreter::HTTPVersionInList(const char *protocol_section)
     else
     {
         return HTTP_ILLEGAL_VERSION;
+    }
+}
+
+size_t HTTP_Interpreter::HTTPHeaderKMP(
+    const char *message_content, 
+    const char *target_content,
+    char *content_out_buf,
+    char **to_target_ptr_in_content,
+    size_t start_index = 0
+    )
+{
+    size_t i, j, k;
+    size_t message_length = strlen(message_content);
+    size_t target_message_length = strlen(target_content);
+
+    // clear pass in message buffer container
+    memset(content_out_buf, 0, MAX_LOCAL_TMP_BUF);
+
+    // start KMP patterning
+    for(i = start_index, j = 0, k = 0; i < message_length; i++)
+    {
+        if(message_content[i] == target_content[0])
+        {
+            if(target_message_length == 1)
+            {
+                k = 1;
+                break;
+            }
+            for(j = 1; j < target_message_length; j++)
+            {
+                if(target_content[j] != message_content[i + j]) break;
+                else if(j == target_message_length - 1) k = 1;
+            }
+            i += j;
+            if(k) break;
+        }
+        else if(
+            message_content[i] == '\r' &&
+            message_content[i + 1] == '\n' &&
+            message_content[i + 2] == '\r' &&
+            message_content[i + 3] == '\n'
+            )
+            {
+                // points to next body
+                *to_target_ptr_in_content = (char*)(message_content + i + 4);
+                return 0xffffffffffffffff;
+            }
+    }
+    if(k)
+    {
+        for(;i < message_length; i++)
+        {
+            if(message_content[i] != ':' || message_content[i] != ' ') break;
+        }
+        for(j = i; j < message_length; j++)
+        {
+            if(
+                message_content[j] == '\r' || 
+                message_content[j] == ';' || 
+                message_content[j] == ' ' || 
+                message_content[j] == '\n'
+                ) 
+                break;
+        }
+        strncpy(content_out_buf, message_content[i], j - i);
+        *to_target_ptr_in_content = (char*)(message_content + i);
+        return j - i;
+    }
+    else
+    {
+        *to_target_ptr_in_content = NULL;
+        return 0;
     }
 }
 

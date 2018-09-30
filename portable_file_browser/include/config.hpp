@@ -13,12 +13,25 @@
 #include <list>
 #include <queue>
 
+// notifier for parameters
+#define IN 
+#define OUT
+
 // basic configuration of server IO
 #define DEF_PORT 4096
-#define MAX_RECV_BUF 2048
-#define MAX_HOST_NAME_LEN 256
-#define MAX_CONTENT_TYPE_LEN 256
 
+// recv message buffer size
+#define MAX_RECV_BUF 2048
+// local access tmp buffer size
+#define MAX_LOCAL_TMP_BUF 1024
+// host name buffer size
+#define MAX_HOST_NAME_LEN 256
+// content type/name buffer size
+#define MAX_CONTENT_TYPE_LEN 256
+// default file buffer size
+#define MAX_DEFAULT_FILE_LEN 128
+
+// send message buffer size
 #define MAX_SEND_BUF 8192
 
 #define MAX_CONCURRENCY_THREAD_NUM 4
