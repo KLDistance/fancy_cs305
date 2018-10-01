@@ -18,7 +18,7 @@
 #define OUT
 
 // basic configuration of server IO
-#define DEF_PORT 4096
+#define DEF_PORT 80
 
 // recv message buffer size
 #define MAX_RECV_BUF 2048

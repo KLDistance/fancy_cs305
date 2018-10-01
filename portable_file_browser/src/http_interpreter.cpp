@@ -214,6 +214,7 @@ int HTTP_Interpreter::GenerateRecvHeader(HTTP_Receiving_Message_Header *recv_hea
 
 int HTTP_Interpreter::GenerateSendHeader(HTTP_Sending_Message_Header *send_header, Message *send_message)
 {
+    
     return 0;
 }
 

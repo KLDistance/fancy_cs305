@@ -71,7 +71,7 @@ void Msg_List::push(Message m)
 Message Msg_List::pop()
 {
     int get = 0;
-    Messgae message;
+    Message message;
     do
     {
         if(!this->msg_list.empty())

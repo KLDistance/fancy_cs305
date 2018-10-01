@@ -3,6 +3,7 @@
 
 #include "config.hpp"
 #include "message_queue.hpp"
+#include "http_interpreter.hpp"
 
 class TCP_Listener
 {
@@ -55,5 +56,7 @@ public:
     // get threading concurrency number
     size_t get_present_concurrency_num();
 };
+
+extern int main_task_sequence();
 
 #endif

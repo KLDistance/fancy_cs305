@@ -96,3 +96,82 @@ int Task_Manager::thread_start()
     }
     return 0;
 }
+
+void* Task_Manager::listener_thread_proc(void *lp_parameters)
+{
+    TCP_Listener *tcp_listener = new TCP_Listener(DEF_PORT);
+    while(1)
+    {
+        tcp_listener->recv_msg();
+    }
+    delete tcp_listener;
+    return (void*)0;
+}
+
+void* Task_Manager::processor_threads_proc(void *lp_parameters)
+{
+    while(1)
+    {
+        HTTP_Receiving_Message_Header *recv_header = new HTTP_Receiving_Message_Header();
+        Message recv_message = recv_msg_list.pop();
+        HTTP_Interpreter::GenerateRecvHeader(recv_header, &recv_message);
+
+        // sample message content
+        char *message_content = NULL;
+        sample_info_provider(&message_content);
+        
+        // sending message
+        Message send_message;
+        send_message.Init(message_content, recv_message.GetAcceptFd());
+        send_msg_list.push(send_message);
+
+        // release allocated memory
+        delete recv_header;
+    }
+    return (void*)0;
+}
+
+void* Task_Manager::responser_thread_proc(void *lp_parameters)
+{
+    // TODO: multithreading on sending message ought to be updated
+    TCP_Responser *tcp_responser = new TCP_Responser();
+    while(1)
+    {
+        tcp_responser->send_msg();
+    }
+    delete tcp_responser;
+    return (void*)0;
+}
+
+int Task_Manager::increase_loading_num(size_t addition_concurrency_num)
+{
+
+    return 0;
+}
+
+int Task_Manager::decrease_loading_num(size_t subtract_concurrency_num)
+{
+
+    return 0;
+}
+
+int Task_Manager::remove_all_loadings()
+{
+
+    return 0;
+}
+
+size_t Task_Manager::get_present_concurrency_num()
+{
+    return this->concurrency_num;
+}
+
+int main_task_sequence()
+{
+    // create task manager
+    Task_Manager *task_manager = new Task_Manager();
+    task_manager->init_thread_state(4);
+
+
+    return 0;
+}
