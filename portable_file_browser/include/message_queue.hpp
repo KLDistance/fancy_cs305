@@ -6,9 +6,9 @@
 class Message
 {
 private:
-    int accept_fd = NULL;
-    char* msg = NULL;
-    size_t msg_len = 0;
+    int accept_fd;
+    char* msg;
+    size_t msg_len;
 public:
     Message();
     ~Message();

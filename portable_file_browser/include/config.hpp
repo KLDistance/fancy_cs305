@@ -75,6 +75,6 @@
 #define CHARSET_GBK 4
 
 // control the max concurrency number
-extern const unsigned int MAX_VISITOR_NUM = 20;
+extern const size_t MAX_VISITOR_NUM = 20;
 
 #endif

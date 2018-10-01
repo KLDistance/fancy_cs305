@@ -2,6 +2,7 @@
 
 Message::Message()
 {
+    this->accept_fd = 0;
     this->msg = NULL;
     this->msg_len = 0;
 }
@@ -31,7 +32,7 @@ void Message::Free()
 {
     if(this->msg) free(this->msg);
     if(this->msg_len) this->msg_len = 0;
-    if(this->accept_fd) this->accept_fd = NULL;
+    if(this->accept_fd) this->accept_fd = 0;
 }
 
 char* Message::GetMessageContent()

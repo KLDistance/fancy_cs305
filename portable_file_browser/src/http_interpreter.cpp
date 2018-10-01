@@ -2,7 +2,7 @@
 
 HTTP_Sending_Message_Header::HTTP_Sending_Message_Header()
 {
-
+    
 }
 
 HTTP_Sending_Message_Header::HTTP_Sending_Message_Header(int http_ver, int conn_stat, int content, int charset, size_t content_len)
@@ -46,6 +46,10 @@ size_t HTTP_Sending_Message_Header::GetContentLength()
 
 HTTP_Receiving_Message_Header::HTTP_Receiving_Message_Header()
 {
+    this->http_version = HTTP_VERSION_1_0;
+    this->request_type = REQUEST_HEAD;
+    this->content_length = 0;
+
     // clear string buffer
     memset(this->default_file, 0, MAX_DEFAULT_FILE_LEN);
     memset(this->host_name, 0, MAX_HOST_NAME_LEN);
@@ -54,7 +58,7 @@ HTTP_Receiving_Message_Header::HTTP_Receiving_Message_Header()
 
 HTTP_Receiving_Message_Header::HTTP_Receiving_Message_Header(int request, const char *host, const char *content, size_t content_len)
 {
-
+    HTTP_Receiving_Message_Header();
 }
 
 int HTTP_Receiving_Message_Header::SetHTTPVersion(int version)
@@ -163,7 +167,7 @@ int HTTP_Interpreter::GenerateRecvHeader(HTTP_Receiving_Message_Header *recv_hea
     j = ++i;
     for(;i < content_length; i++)
     {
-        if(content_message[i] == '\r' || content_message == ' ') break;
+        if(content_message[i] == '\r' || content_message[i] == ' ') break;
     }
     strncpy(tmp_buf, content_message, i - j);
     state_code = HTTP_Interpreter::HTTPVersionInList(tmp_buf);
@@ -279,7 +283,7 @@ size_t HTTP_Interpreter::HTTPHeaderKMP(
     const char *target_content,
     char *content_out_buf,
     char **to_target_ptr_in_content,
-    size_t start_index = 0
+    size_t start_index
     )
 {
     size_t i, j, k;
@@ -335,7 +339,7 @@ size_t HTTP_Interpreter::HTTPHeaderKMP(
                 ) 
                 break;
         }
-        strncpy(content_out_buf, message_content[i], j - i);
+        strncpy(content_out_buf, (char*)(message_content + i), j - i);
         *to_target_ptr_in_content = (char*)(message_content + i);
         return j - i;
     }

@@ -5,12 +5,7 @@
 #include "message_queue.hpp"
 #include "content_provider.hpp"
 
-#define CHECK_STATE(code) (                             \
-    if (!(code)) {                                      \
-        fprintf(stderr, "server error %d\n", code);     \
-        return -1;                                      \
-    }                                                   \
-)
+#define CHECK_STATE(code){if(!(code)){fprintf(stderr, "error code %d\n", (code)); return -1;}} 
 
 class HTTP_Receiving_Message_Header
 {
@@ -18,9 +13,9 @@ private:
     // default configuration
 
     // request http version
-    int http_version = HTTP_VERSION_1_0;
+    int http_version;
     // request type: GET, HEAD, POST and so on
-    int request_type = REQUEST_HEAD;
+    int request_type;
     // request entry file, for instance, index.php
     char default_file[MAX_DEFAULT_FILE_LEN];
     // local server name
@@ -32,7 +27,7 @@ private:
     // accept information
     char accept_info[MAX_ACCEPT_INFO];
     // content length
-    size_t content_length = 0;
+    size_t content_length;
 public:
     // TODO: change the declaration of this object to be heap-only, and stack-forbidden.
     HTTP_Receiving_Message_Header();
@@ -61,15 +56,15 @@ private:
     // default configuration
     
     // http version of response side
-    int http_version = HTTP_VERSION_1_0;
+    int http_version;
     // connection state
-    int connection_state = CONNECTION_CLOSE;
+    int connection_state;
     // response content type
-    int content_type = FILE_TYPE_TEXT_HTML;
+    int content_type;
     // content encoding type
-    int charset_type = CHARSET_UTF8;
+    int charset_type;
     // response content length
-    size_t content_length = 0;
+    size_t content_length;
 public:
     // TODO: change the declaration of this object to be heap-only, and stack-forbidden.
     HTTP_Sending_Message_Header();
@@ -80,7 +75,7 @@ public:
     int GetConnectionState();
     int GetContentType();
     int GetCharsetType();
-    int GetContentLength();
+    size_t GetContentLength();
     HTTP_Sending_Message_Header* GetHeader();
 };
 

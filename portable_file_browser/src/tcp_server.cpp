@@ -88,11 +88,21 @@ int Task_Manager::init_thread_state(size_t init_concurrency_num)
 int Task_Manager::thread_start()
 {
     size_t i;
-    pthread_create(&this->listener_thread, NULL, this->listener_thread_proc, NULL);
-    pthread_create(&this->responser_thread, NULL, this->responser_thread_proc, NULL);
+    
+    // create threads
+    pthread_create(&this->listener_thread, NULL, Task_Manager::listener_thread_proc, NULL);
+    pthread_create(&this->responser_thread, NULL, Task_Manager::responser_thread_proc, NULL);
     for(i = 0; i < this->concurrency_num; i++)
     {
-        pthread_create(&this->processor_threads[i], NULL, this->processor_threads_proc, NULL);
+        pthread_create(&this->processor_threads[i], NULL, Task_Manager::processor_threads_proc, NULL);
+    }
+    
+    // wait for termination or ending of joinable threads
+    pthread_join(this->listener_thread, NULL);
+    pthread_join(this->responser_thread, NULL);
+    for(i = 0; i < this->concurrency_num; i++)
+    {
+        pthread_join(this->processor_threads[i], NULL);
     }
     return 0;
 }
@@ -164,14 +174,4 @@ int Task_Manager::remove_all_loadings()
 size_t Task_Manager::get_present_concurrency_num()
 {
     return this->concurrency_num;
-}
-
-int main_task_sequence()
-{
-    // create task manager
-    Task_Manager *task_manager = new Task_Manager();
-    task_manager->init_thread_state(4);
-
-
-    return 0;
 }

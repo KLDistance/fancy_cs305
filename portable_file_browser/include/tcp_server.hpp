@@ -8,8 +8,8 @@
 class TCP_Listener
 {
 private:
-    int socket_fd = 0;
-    int accept_fd = 0;
+    int socket_fd;
+    int accept_fd;
     sockaddr_in local_server;
     sockaddr_in remote_addr;
 public:
@@ -20,7 +20,7 @@ public:
 class TCP_Responser
 {
 private:
-    int sending_target_fd = 0;
+    int sending_target_fd;
 public:
     TCP_Responser();
     int send_msg();
@@ -37,14 +37,14 @@ private:
     pthread_t responser_thread;
 
     // accept comming in requests
-    void* listener_thread_proc(void *lp_parameters);
+    static void* listener_thread_proc(void *lp_parameters);
     // process client business
-    void* processor_threads_proc(void *lp_parameters);
+    static void* processor_threads_proc(void *lp_parameters);
     // send processed message or resources
-    void* responser_thread_proc(void *lp_parameters);
+    static void* responser_thread_proc(void *lp_parameters);
 public:
     // initialize semaphore states
-    int init_thread_state(int init_concurrency_num);
+    int init_thread_state(size_t init_concurrency_num);
     // start the threading tasks in the form of thread pool
     int thread_start();
     // increase threading concurrency
@@ -56,7 +56,5 @@ public:
     // get threading concurrency number
     size_t get_present_concurrency_num();
 };
-
-extern int main_task_sequence();
 
 #endif
