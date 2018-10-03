@@ -1,4 +1,4 @@
-#include "tcp_server.hpp"
+#include "tcp_server.h"
 
 TCP_Listener::TCP_Listener(int listen_port)
 {
@@ -75,6 +75,16 @@ int TCP_Responser::send_msg()
             sending_msg.Free();
         }
     }
+}
+
+Task_Manager::Task_Manager()
+{
+
+}
+
+Task_Manager::~Task_Manager()
+{
+    
 }
 
 int Task_Manager::init_thread_state(size_t init_concurrency_num)

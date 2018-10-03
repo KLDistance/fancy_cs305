@@ -1,7 +1,7 @@
-#ifndef __MESSAGE_QUEUE_HPP__
-#define __MESSAGE_QUEUE_HPP__
+#ifndef __MESSAGE_QUEUE_H__
+#define __MESSAGE_QUEUE_H__
 
-#include "config.hpp"
+#include "config.h"
 
 class Message
 {
@@ -32,7 +32,6 @@ public:
     Message pop();
 };
 
-// global message list
 extern Msg_List recv_msg_list;
 extern Msg_List send_msg_list;
 

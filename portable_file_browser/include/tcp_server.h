@@ -1,9 +1,9 @@
-#ifndef __TCP_SERVER_HPP__
-#define __TCP_SERVER_HPP__
+#ifndef __TCP_SERVER_H__
+#define __TCP_SERVER_H__
 
-#include "config.hpp"
-#include "message_queue.hpp"
-#include "http_interpreter.hpp"
+#include "config.h"
+#include "message_queue.h"
+#include "http_interpreter.h"
 
 class TCP_Listener
 {
@@ -43,6 +43,8 @@ private:
     // send processed message or resources
     static void* responser_thread_proc(void *lp_parameters);
 public:
+    Task_Manager();
+    ~Task_Manager();
     // initialize semaphore states
     int init_thread_state(size_t init_concurrency_num);
     // start the threading tasks in the form of thread pool

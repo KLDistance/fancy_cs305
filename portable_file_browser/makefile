@@ -1,4 +1,4 @@
-bin/portable_file_browser:src/main.cpp obj/tcp_server.o obj/message_queue.o obj/http_interpreter.o obj/content_provider.o
+bin/portable_file_browser:obj/tcp_server.o obj/message_queue.o obj/http_interpreter.o obj/content_provider.o
 	g++ src/main.cpp -o bin/portable_file_browser obj/tcp_server.o obj/message_queue.o obj/http_interpreter.o obj/content_provider.o -Iinclude -lpthread
 
 obj/tcp_server.o:src/tcp_server.cpp

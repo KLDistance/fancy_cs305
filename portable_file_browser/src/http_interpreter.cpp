@@ -1,4 +1,4 @@
-#include "http_interpreter.hpp"
+#include "http_interpreter.h"
 
 HTTP_Sending_Message_Header::HTTP_Sending_Message_Header()
 {
@@ -238,7 +238,7 @@ int HTTP_Interpreter::GenerateSendMessage(HTTP_Receiving_Message_Header *recv_he
     return 0;
 }
 
-int RequestTypeInList(const char *request_section)
+int HTTP_Interpreter::RequestTypeInList(const char *request_section)
 {
     if(!strncmp(request_section, "HEAD", strlen("HEAD")))
     {

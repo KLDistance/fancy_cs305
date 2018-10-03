@@ -1,4 +1,7 @@
-#include "message_queue.hpp"
+#include "message_queue.h"
+
+Msg_List recv_msg_list;
+Msg_List send_msg_list;
 
 Message::Message()
 {

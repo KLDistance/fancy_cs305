@@ -1,5 +1,5 @@
-#ifndef __CONFIG_HPP__
-#define __CONFIG_HPP__
+#ifndef __CONFIG_H__
+#define __CONFIG_H__
 
 #include <stdio.h>
 #include <string.h>
@@ -18,7 +18,7 @@
 #define OUT
 
 // basic configuration of server IO
-#define DEF_PORT 80
+#define DEF_PORT 4097
 
 // recv message buffer size
 #define MAX_RECV_BUF 2048
@@ -75,6 +75,6 @@
 #define CHARSET_GBK 4
 
 // control the max concurrency number
-extern const size_t MAX_VISITOR_NUM = 20;
+const size_t MAX_VISITOR_NUM = 20;
 
 #endif

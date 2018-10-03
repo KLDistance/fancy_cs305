@@ -1,9 +1,9 @@
-#ifndef __HTTP_INTERPRETER_HPP__
-#define __HTTP_INTERPRETER_HPP__
+#ifndef __HTTP_INTERPRETER_H__
+#define __HTTP_INTERPRETER_H__
 
-#include "config.hpp"
-#include "message_queue.hpp"
-#include "content_provider.hpp"
+#include "config.h"
+#include "message_queue.h"
+#include "content_provider.h"
 
 #define CHECK_STATE(code){if(!(code)){fprintf(stderr, "error code %d\n", (code)); return -1;}} 
 

@@ -1,4 +1,4 @@
-#include "content_provider.hpp"
+#include "content_provider.h"
 
 int sample_info_provider(char **message_content)
 {
