@@ -12,6 +12,9 @@ TCP_Listener::TCP_Listener(int listen_port)
     this->local_server.sin_addr.s_addr = htonl(INADDR_ANY);
     this->local_server.sin_port = htons(listen_port);
 
+    // clear the odd interrupted port reminants
+    setsockopt(this->socket_fd, SOL_SOCKET, SO_REUSEADDR, (sockaddr*)&this->local_server, sizeof(this->local_server));
+
     if(bind(this->socket_fd, (sockaddr*)&this->local_server, sizeof(this->local_server)) < 0)
     {
         fprintf(stderr, "bind() failed.\n");
@@ -38,7 +41,7 @@ int TCP_Listener::recv_msg()
             continue;
         }
         // check connection
-        printf("Received a connection from %s\n", (char*)inet_ntoa(remote_addr.sin_addr));
+        printf("Received a connection from %s, accept id: %u\n", (char*)inet_ntoa(remote_addr.sin_addr), this->accept_fd);
 
         // receive request from client
         if(read(this->accept_fd, client_request, MAX_RECV_BUF) < 0)
@@ -66,12 +69,14 @@ int TCP_Responser::send_msg()
     while(1)
     {
         Message sending_msg = send_msg_list.pop();
+        printf("send_msg method! Accept id: %u\n", sending_msg.GetAcceptFd());
         if(send(sending_msg.GetAcceptFd(), sending_msg.GetMessageContent(), sending_msg.GetMessageLength(), 0) < 0)
         {
-            fprintf(stderr, "send() error!\n");
+            fprintf(stderr, "send() error! Accept id: %u\n", sending_msg.GetAcceptFd());
         }
         else
         {
+            close(sending_msg.GetAcceptFd());
             sending_msg.Free();
         }
     }
@@ -135,6 +140,7 @@ void* Task_Manager::processor_threads_proc(void *lp_parameters)
         HTTP_Receiving_Message_Header *recv_header = new HTTP_Receiving_Message_Header();
         Message recv_message = recv_msg_list.pop();
         HTTP_Interpreter::GenerateRecvHeader(recv_header, &recv_message);
+        printf("accept id: %u\n", recv_message.GetAcceptFd());
 
         // sample message content
         char *message_content = NULL;
@@ -147,6 +153,7 @@ void* Task_Manager::processor_threads_proc(void *lp_parameters)
 
         // release allocated memory
         delete recv_header;
+        printf("here\n");
     }
     return (void*)0;
 }

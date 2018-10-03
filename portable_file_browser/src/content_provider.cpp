@@ -10,7 +10,7 @@ int sample_info_provider(char **message_content)
 
     char *file_body_content = NULL;
     
-    FILE *pFile = fopen("../dep/sample.html", "r");
+    FILE *pFile = fopen("dep/sample.html", "r");
     size_t file_size = 0;
 
     if(!pFile)
@@ -39,14 +39,13 @@ int sample_info_provider(char **message_content)
     memset(*message_content, 0, file_size + 2001);
     sprintf(
         *message_content,
-        "                                               \
-        HTTP/1.0 200 OK\r\n                             \
-        Connection: close\r\n                           \
-        Server: portable_file_browser/0.0.1\r\n         \
-        Content-Type: text/html; charset=utf-8\r\n      \
-        Content-Length: %lu\r\n\r\n                     \
-        %s\r\n\r\n                                      \
-        ",
+        "\
+HTTP/1.0 200 OK\r\n\
+Connection: close\r\n\
+Server: portable_file_browser/0.0.1\r\n\
+Content-Type: text/html; charset=utf-8\r\n\
+Content-Length: %lu\r\n\r\n\
+%s\r\n\r\n",
         file_size,
         file_body_content
     );

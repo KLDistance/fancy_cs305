@@ -320,7 +320,15 @@ size_t HTTP_Interpreter::HTTPHeaderKMP(
             {
                 // points to next body
                 *to_target_ptr_in_content = (char*)(message_content + i + 4);
+#ifdef __amd64__
                 return 0xffffffffffffffff;
+#endif
+#ifdef __x86__ 
+                return 0xffffffff;
+#endif
+#ifdef __ARM__
+                return 0xffffffff;
+#endif
             }
     }
     if(k)

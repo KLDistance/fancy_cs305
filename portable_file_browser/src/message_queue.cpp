@@ -91,4 +91,5 @@ Message Msg_List::pop()
             pthread_mutex_unlock(&this->lock);
         }
     } while(!get);
+    return message;
 }
