@@ -74,6 +74,14 @@
 #define CHARSET_GB2312 3
 #define CHARSET_GBK 4
 
+// file manager
+
+// max number of displayed files per page
+#define MAX_FILE_DISPLAY_NUM 200
+
+// max number of buffer pages in the history pool
+#define MAX_PAGE_BUFFER_POOL 15
+
 // control the max concurrency number
 const size_t MAX_VISITOR_NUM = 20;
 
